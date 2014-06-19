@@ -1,6 +1,7 @@
 package com.dingpw.dipcamear;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
 import android.media.MediaRecorder;
@@ -12,6 +13,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import com.dingpw.dipcamear.http.LightHttpServer;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -20,7 +23,7 @@ import java.io.IOException;
  * Created by dpw on 6/19/14.
  */
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
-    private boolean isLocal = false;
+    private boolean isLocal = true;
     private final String localPath = "/mnt/sdcard/demo.3gp";
     private MediaRecorder mediarecorder;// 录制视频的类
     private SurfaceView surfaceview;// 显示视频的控件
@@ -54,7 +57,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
         }
 
-
+        this.startService(new Intent(this,LightHttpServer.class));
 
         SurfaceHolder holder = surfaceview.getHolder();// 取得holder
         holder.addCallback(this); // holder加入回调接口
