@@ -4,30 +4,17 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
 import android.media.MediaRecorder;
-import android.net.LocalServerSocket;
-import android.net.LocalSocket;
-import android.net.LocalSocketAddress;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 
-/**
- * Created by dpw on 6/19/14.
- */
-public class MainActivity extends Activity implements SurfaceHolder.Callback {
-    private boolean isLocal = false;
-    private final String localPath = "/mnt/sdcard/demo.3gp";
+public class MainActivity_back extends Activity implements SurfaceHolder.Callback {
     private MediaRecorder mediarecorder;// 录制视频的类
     private SurfaceView surfaceview;// 显示视频的控件
-    private LocalServerSocket localServerSocket = null;
-    private LocalSocket localSocket = null;
-    private LocalSocket remoteSocket = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,23 +25,6 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         // 选择支持半透明模式,在有surfaceview的activity中使用。
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
         this.surfaceview = new SurfaceView(this);
-
-
-        try{
-            localServerSocket = new LocalServerSocket("H264");
-            localSocket = new LocalSocket();
-            localSocket.connect(new LocalSocketAddress("H264"));
-            localSocket.setReceiveBufferSize(500000);
-            localSocket.setSendBufferSize(500000);
-
-            remoteSocket = localServerSocket.accept();
-            remoteSocket.setReceiveBufferSize(500000);
-            remoteSocket.setSendBufferSize(500000);
-        }catch (Exception e){
-
-        }
-
-
 
         SurfaceHolder holder = surfaceview.getHolder();// 取得holder
         holder.addCallback(this); // holder加入回调接口
@@ -80,15 +50,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         mediarecorder.setVideoFrameRate(20);
         mediarecorder.setPreviewDisplay(surfaceHolder.getSurface());
         // 设置视频文件输出的路径
-        mediarecorder.setMaxDuration(0);//called after setOutputFile before prepare,if zero or negation,disables the limit
-        mediarecorder.setMaxFileSize(0);//called after setOutputFile before prepare,if zero or negation,disables the limit
-        if(isLocal){
-            mediarecorder.setOutputFile(this.localPath);
-        }else{
-            FileDescriptor fileDescriptor = remoteSocket.getFileDescriptor();
-            System.out.println(fileDescriptor);
-            mediarecorder.setOutputFile(fileDescriptor);
-        }
+        mediarecorder.setOutputFile("/sdcard/love.3gp");
         try {
             // 准备录制
             mediarecorder.prepare();
