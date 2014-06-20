@@ -58,6 +58,7 @@ public class RequestListener extends Thread {
                 WorkerThread t = new WorkerThread(this.httpService, defaultHttpServerConnection, socket);
                 t.setDaemon(true);
                 t.start();
+
             }catch (Exception e){
 
             }

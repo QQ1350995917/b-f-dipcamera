@@ -70,10 +70,8 @@ public class ModAssetServer implements HttpRequestHandler {
 		mAssetManager = mServer.context.getAssets();
 	}
 
-	public void handle(
-			final HttpRequest request, 
-			final HttpResponse response,
-			final HttpContext context) throws HttpException, IOException {
+    @Override
+	public void handle(HttpRequest request, HttpResponse response,final HttpContext context) throws HttpException, IOException {
 		AbstractHttpEntity body = null;
 
 		final String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);

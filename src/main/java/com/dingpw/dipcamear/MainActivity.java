@@ -1,6 +1,7 @@
 package com.dingpw.dipcamear;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
@@ -9,15 +10,31 @@ import android.net.LocalServerSocket;
 import android.net.LocalSocket;
 import android.net.LocalSocketAddress;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.IBinder;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import com.dingpw.dipcamear.http.LightHttpServer;
+import com.dingpw.dipcamear.http.ModAssetServer;
+import com.dingpw.dipcamear.http.WorkerThread;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.impl.DefaultConnectionReuseStrategy;
+import org.apache.http.impl.DefaultHttpResponseFactory;
+import org.apache.http.impl.DefaultHttpServerConnection;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.*;
 
-import java.io.FileDescriptor;
-import java.io.IOException;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Created by dpw on 6/19/14.
@@ -31,6 +48,60 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private LocalSocket localSocket = null;
     private LocalSocket remoteSocket = null;
 
+
+    private class MyHttpRequestHandler implements HttpRequestHandler{
+        @Override
+        public void handle(HttpRequest httpRequest, HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
+            System.out.println("-=-=-=-=MyHttpRequestHandler-=-=-=-=-=");
+        }
+    }
+
+        public  void startMyserver() {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        ServerSocket serverSocket = new ServerSocket(12345);
+                        // 创建HTTP请求执行器注册表
+                        HttpRequestHandlerRegistry reqistry = new HttpRequestHandlerRegistry();
+                        reqistry.register("*", new MyHttpRequestHandler());
+// 设置HTTP请求执行器
+                        BasicHttpProcessor basicHttpProcessor = new BasicHttpProcessor();
+                        basicHttpProcessor.addInterceptor(new ResponseDate());
+                        basicHttpProcessor.addInterceptor(new ResponseServer());
+                        basicHttpProcessor.addInterceptor(new ResponseContent());
+                        basicHttpProcessor.addInterceptor(new ResponseConnControl());
+                        HttpService httpService = new HttpService(basicHttpProcessor, new DefaultConnectionReuseStrategy(), new DefaultHttpResponseFactory());
+
+                        HttpParams httpParams = new BasicHttpParams();
+                        httpParams.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 5000)
+                                .setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
+                                .setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false)
+                                .setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
+                                .setParameter(CoreProtocolPNames.ORIGIN_SERVER, "HTTP-SERVER");
+
+                        httpService.setHandlerResolver(reqistry);
+/* 循环接收各客户端 */
+                        while (!Thread.interrupted()) {
+                            // 接收客户端套接字
+                            Socket socket = serverSocket.accept();
+                            // 绑定至服务器端HTTP连接
+                            DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
+                            conn.bind(socket, httpParams);
+                            System.out.println("-----------------------new request--------------------");
+                            // 派送至WorkerThread处理请求
+//                            Thread t = new WorkerThread(httpService, conn);
+//                            t.setDaemon(true); // 设为守护线程
+//                            t.start();
+                            httpService.handleRequest(new DefaultHttpServerConnection(), new BasicHttpContext());
+                        }
+                    }catch(Exception e){
+
+                    }
+
+                }
+            }).start();
+        }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +128,12 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
         }
 
-        this.startService(new Intent(this,LightHttpServer.class));
+        try {
+            ElementalHttpServer.main(new String[]{"/mnt/sdcard/","12358"});
+        }catch (Exception e){}
+
+//        startMyserver();
+        //this.startService(new Intent(this,LightHttpServer.class));
 
         SurfaceHolder holder = surfaceview.getHolder();// 取得holder
         holder.addCallback(this); // holder加入回调接口

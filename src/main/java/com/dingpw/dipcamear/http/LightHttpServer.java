@@ -37,15 +37,18 @@ public class LightHttpServer extends Service{
             date = new Date(0);
         }
 
-        for (int i=0; i<MODULES.length; i++) {
-            try {
-                Class<?> pluginClass = Class.forName(LightHttpServer.class.getPackage().getName()+"."+MODULES[i]);
-                Constructor<?> pluginConstructor = pluginClass.getConstructor(new Class[]{LightHttpServer.class});
-                addRequestHandler((String) pluginClass.getField("PATTERN").get(null), (HttpRequestHandler)pluginConstructor.newInstance(this));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        for (int i=0; i<MODULES.length; i++) {
+//            try {
+//                Class<?> pluginClass = Class.forName(LightHttpServer.class.getPackage().getName()+"."+MODULES[i]);
+//                Constructor<?> pluginConstructor = pluginClass.getConstructor(new Class[]{LightHttpServer.class});
+//                addRequestHandler((String) pluginClass.getField("PATTERN").get(null), (HttpRequestHandler)pluginConstructor.newInstance(this));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+
+
+        addRequestHandler("*",new ModAssetServer(this));
 
         new HttpRequestListener(1234);
     }
