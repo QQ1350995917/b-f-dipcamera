@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>播放器</title>
+<SCRIPT LANGUAGE=JavaScript>
+<!--
+var RealMode=0;
+var RealPlayer5=0;
+var RealPlayer4=0;
+var RealPlayerG2=0;
+if (navigator.userAgent.indexOf("MSIE")< 0 ){
+numPlugins = navigator.plugins.length;
+for (i = 0; i < numPlugins; i++){
+
+plugin = navigator.plugins[i];
+if (plugin.name.substring(0,10)=="RealPlayer"){
+RealMode=1;
+}
+}
+}
+// 以下代码通过VBScript的CreateObject()函数动态的创建RealPlayer对象
+document.write('<SCRIPT LANGUAGE=VBScript\> \n');
+document.write('on error resume next \n');
+document.write('RealPlayerG2 = (NOT IsNull(CreateObject("rmocx.RealPlayer 
+G2 Control")))\n');
+document.write('RealPlayer5 = (NOT IsNull(CreateObject("RealPlayer.RealPlayer(tm) 
+ActiveX Control (32-bit)")))\n');
+document.write('RealPlayer4 = (NOT IsNull(CreateObject("RealVideo.RealVideo(tm) 
+ActiveX Control (32-bit)")))\n');
+document.write('</SCRIPT\> \n');
+if ( RealPlayerG2 || RealPlayer5 || RealPlayer4 ){
+//可以在此处添加<object>对象
+}else if ( RealMode ){ // NetScape浏览器用户
+// 可以在此处加入<embed>对象
+}else{
+window.location.replace("install.htm"); // 转入install.htm页面指导用户进行安装
+}
+-->
+</Script>
+</head>
+<body>
+<table width="100%" border="0">
+<tr>
+    <td><div align="center">
+      <embed src="rtsp://192.168.11.132:8086" width="400" height="350" autostart="True" loop="True" id="RealPlayer1" autogotourl="false" type="audio/x-pn-realaudio-plugin" 
+controls="imagewindow,ControlPanel" border="0" name="RealPlayer1"></embed>
+    </div></td>
+</tr>
+</table>
+</body>
+</html>
