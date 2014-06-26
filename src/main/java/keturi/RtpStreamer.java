@@ -36,7 +36,6 @@ public class RtpStreamer extends Thread {
 
 	public RtpStreamer(LocalServer local_server) {
 		this.local_server = local_server;
-
 		buf = new byte[2056];
 	}
 
@@ -50,11 +49,9 @@ public class RtpStreamer extends Thread {
 
 	public void init() throws SocketException {
 		socket = new DatagramSocket(server_port, server_address);
-
 		try {
 			fis = local_server.getInputStream();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
@@ -128,13 +125,11 @@ public class RtpStreamer extends Thread {
 			try {
 				fis.read(buf, 0, 4);
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
 			// Calculate the length of the NAL unit
-			nalu_length = buf[3] & 0xFF | (buf[2] & 0xFF) << 8
-					| (buf[1] & 0xFF) << 16 | (buf[0] & 0xFF) << 24;
+			nalu_length = buf[3] & 0xFF | (buf[2] & 0xFF) << 8 | (buf[1] & 0xFF) << 16 | (buf[0] & 0xFF) << 24;
 
 			Log.d(LOG_TAG, bytesToHex(buf));
 
@@ -147,7 +142,6 @@ public class RtpStreamer extends Thread {
 				try {
 					fis.read(buf, 1, nalu_length);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 

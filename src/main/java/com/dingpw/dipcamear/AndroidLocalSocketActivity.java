@@ -63,7 +63,6 @@ public class AndroidLocalSocketActivity extends Activity {
                     sender = lss.accept();
                     sender.setReceiveBufferSize(BUFFER_SIZE);
                     sender.setSendBufferSize(BUFFER_SIZE);
-
                     // 将控制器running设置为true
                     running = true;
 

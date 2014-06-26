@@ -26,6 +26,12 @@
             <type>jar</type>
             <version>r7</version>
         </dependency>
+        <dependency>
+            <groupId>me.neavo</groupId>
+            <artifactId>vitamio</artifactId>
+            <version>4.2.2</version>
+            <type>aar</type>
+        </dependency>
     </dependencies>
 
     <build>

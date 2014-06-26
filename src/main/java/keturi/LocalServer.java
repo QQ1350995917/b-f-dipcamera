@@ -9,16 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class LocalServer {
-	
 	private LocalSocket receiver, sender;
 	private LocalServerSocket lss;
-	
 	public LocalServer(int session_id) {
-		
 		try {
 			lss = new LocalServerSocket("com.vilkas04.ol-" + session_id);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -31,15 +27,12 @@ public class LocalServer {
 			sender.setReceiveBufferSize(500000);
 			sender.setSendBufferSize(500000);
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 	}
-	
 	public FileDescriptor getSenderFileDescriptor() {
 		return sender.getFileDescriptor();
 	}
-	
 	public InputStream getInputStream() throws IOException {
 		return receiver.getInputStream();
 	}
